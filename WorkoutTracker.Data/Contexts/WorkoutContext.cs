@@ -35,6 +35,12 @@ namespace WorkoutTracker.Data.Contexts
                 .WithOne(ws => ws.WorkoutType)
                 .HasForeignKey(ws => ws.WorkoutTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<WorkoutType>().HasData(
+                new WorkoutType { Id = 1, Name = "Cardio" },
+                new WorkoutType { Id = 2, Name = "Strength" },
+                new WorkoutType { Id = 3, Name = "Yoga" },
+                new WorkoutType { Id = 4, Name = "HIIT" }
+            );
 
             // UserProfile → WorkoutSessions (1:N)
             modelBuilder.Entity<UserProfile>()
