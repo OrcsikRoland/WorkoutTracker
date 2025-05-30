@@ -12,7 +12,6 @@ namespace WorkoutTracker.Data.Contexts
     {       
         public DbSet<WorkoutSession> WorkoutSessions { get; set; }
         public DbSet<WorkoutType> WorkoutTypes { get; set; }
-        public DbSet<UserProfile> UserProfiles { get; set; }
 
         public WorkoutContext(DbContextOptions<WorkoutContext> ctx)
         : base(ctx)
@@ -29,7 +28,7 @@ namespace WorkoutTracker.Data.Contexts
         {
             base.OnModelCreating(modelBuilder);
 
-            // WorkoutType → WorkoutSessions (1:N)
+            
             modelBuilder.Entity<WorkoutType>()
                 .HasMany(wt => wt.Sessions)
                 .WithOne(ws => ws.WorkoutType)
@@ -42,12 +41,8 @@ namespace WorkoutTracker.Data.Contexts
                 new WorkoutType { Id = 4, Name = "HIIT" }
             );
 
-            // UserProfile → WorkoutSessions (1:N)
-            modelBuilder.Entity<UserProfile>()
-                .HasMany(up => up.Sessions)
-                .WithOne()
-                .HasForeignKey("UserProfileId") // shadow property
-                .OnDelete(DeleteBehavior.Cascade);
+            
+          
         }
     }
 }

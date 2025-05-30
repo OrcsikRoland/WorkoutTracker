@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using WorkoutTracker.Data.Contexts;
 using WorkoutTracker.Entities.Models;
+using WorkoutTracker.Logic.DTOs;
+using WorkoutTracker.Logic.Services;
 
 namespace WorkoutTracker.Endpoint.Controllers
 {
@@ -9,35 +11,36 @@ namespace WorkoutTracker.Endpoint.Controllers
     [Route("api/[controller]")]
     public class WorkoutTypeController : ControllerBase
     {
-        private readonly WorkoutContext _context;
+        private readonly WorkoutTypeService _service;
 
-        public WorkoutTypeController(WorkoutContext context)
+        public WorkoutTypeController(WorkoutTypeService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<WorkoutType>>> GetAll()
+        public async Task<ActionResult<IEnumerable<WorkoutTypeDTO>>> GetAll()
         {
-            return await _context.WorkoutTypes.ToListAsync();
+            return Ok(await _service.GetAllAsync());
+        }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] WorkoutTypeDTO dto)
+        {
+            var updated = await _service.UpdateAsync(id, dto);
+            return Ok(updated);
         }
 
         [HttpPost]
-        public async Task<ActionResult<WorkoutType>> Create(WorkoutType type)
+        public async Task<ActionResult<WorkoutTypeDTO>> Create(WorkoutTypeDTO dto)
         {
-            _context.WorkoutTypes.Add(type);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetAll), new { id = type.Id }, type);
+            var created = await _service.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetAll), new { id = created.Id }, created);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var type = await _context.WorkoutTypes.FindAsync(id);
-            if (type == null) return NotFound();
-
-            _context.WorkoutTypes.Remove(type);
-            await _context.SaveChangesAsync();
+            await _service.DeleteAsync(id);
             return NoContent();
         }
     }
